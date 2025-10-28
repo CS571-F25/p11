@@ -6,6 +6,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tooltip, TooltipProvider, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import { Info } from "lucide-react";
 
 function SignInForm() {
   const { signIn } = useAuthActions();
@@ -24,24 +26,11 @@ function SignInForm() {
         </CardHeader>
         <CardContent>
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              setSubmitting(true);
-              const formData = new FormData(e.target as HTMLFormElement);
+            onSubmit={(event) => {
+              event.preventDefault();
+              const formData = new FormData(event.currentTarget);
               formData.set("flow", flow);
-              void signIn("password", formData).catch((error) => {
-                let toastTitle = "";
-                if (error.message.includes("Invalid password")) {
-                  toastTitle = "Invalid password. Please try again.";
-                } else {
-                  toastTitle =
-                    flow === "signIn"
-                      ? "Could not sign in, did you mean to sign up?"
-                      : "Could not sign up, did you mean to sign in?";
-                }
-                toast.error(toastTitle);
-                setSubmitting(false);
-              });
+              void signIn("password", formData);
             }}
           >
             <div className="flex flex-col gap-6">
@@ -58,6 +47,18 @@ function SignInForm() {
               <div className="grid gap-3">
                 <div className="flex items-center">
                   <Label htmlFor="password">Password</Label>
+                  {flow === "signUp" && (
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger>
+                          <Info className="h-4 w-4 text-muted-foreground ml-2" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          <p>Must be at least 8 characters</p>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  )}
                   <a
                     href="#"
                     className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
@@ -65,6 +66,7 @@ function SignInForm() {
                     Forgot your password?
                   </a>
                 </div>
+
                 <Input
                   id="password"
                   name="password"

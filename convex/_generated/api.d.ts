@@ -14,16 +14,11 @@ import type {
   FunctionReference,
 } from "convex/server";
 import type * as auth from "../auth.js";
-import type * as brands from "../brands.js";
-import type * as cart from "../cart.js";
-import type * as categories from "../categories.js";
-import type * as files from "../files.js";
+import type * as comments from "../comments.js";
 import type * as http from "../http.js";
-import type * as migration from "../migration.js";
-import type * as orders from "../orders.js";
-import type * as products from "../products.js";
+import type * as movies from "../movies.js";
+import type * as reactions from "../reactions.js";
 import type * as router from "../router.js";
-import type * as seedData from "../seedData.js";
 import type * as userProfiles from "../userProfiles.js";
 
 /**
@@ -36,16 +31,11 @@ import type * as userProfiles from "../userProfiles.js";
  */
 declare const fullApi: ApiFromModules<{
   auth: typeof auth;
-  brands: typeof brands;
-  cart: typeof cart;
-  categories: typeof categories;
-  files: typeof files;
+  comments: typeof comments;
   http: typeof http;
-  migration: typeof migration;
-  orders: typeof orders;
-  products: typeof products;
+  movies: typeof movies;
+  reactions: typeof reactions;
   router: typeof router;
-  seedData: typeof seedData;
   userProfiles: typeof userProfiles;
 }>;
 export declare const api: FilterApi<

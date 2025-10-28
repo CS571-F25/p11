@@ -1,12 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { Film } from "lucide-react"
-import { ModeToggle } from "./theme-toggle";
+import { Film, User, Loader2 } from "lucide-react"
+import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 
 export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
   };
@@ -21,9 +20,9 @@ export function Navbar() {
       <div className="container mx-auto">
         <div className="flex h-24 items-center justify-between">
           {/* Logo/Brand */}
-           <div className="flex items-center gap-2">
-            <Film className="h-8 w-8 text-primary" />
-            <h1 className="text-2xl font-bold text-balance">ReelFindr</h1>
+          <div className="flex items-center gap-2">
+            <Link href="/"> <Film className="h-8 w-8 text-primary" /> </Link>
+            <Link href="/"> <h1 className="text-2xl font-bold text-balance">ReelFindr</h1> </Link>
           </div>
 
           {/* Right side - Navigation Links and Theme toggle */}
@@ -42,12 +41,31 @@ export function Navbar() {
               >
                 Search
               </Link>
-              <Link
-                href="/login"
-                className="text-sm transition-colors hover:text-primary"
-              >
-                Login
-              </Link>
+              <Authenticated>
+                <Link
+                  href="/account"
+                  className="text-sm transition-colors hover:text-primary"
+                  onClick={closeMobileMenu}
+                >
+                  <div className="flex items-center">
+                    <User className="h-6 w-6" />
+                  </div>
+                </Link>
+              </Authenticated>
+              <Unauthenticated>
+                <Link
+                  href="/login"
+                  className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
+                  onClick={closeMobileMenu}
+                >
+                  Login
+                </Link>
+              </Unauthenticated>
+              <AuthLoading>
+                <div className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary">
+                  <Loader2 className="h-5 w-5 animate-spin" />
+                </div>
+              </AuthLoading>
             </div>
 
             {/* Theme toggle and mobile menu */}
@@ -106,13 +124,31 @@ export function Navbar() {
             >
               Search
             </Link>
-            <Link
-              href="/login"
-              className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
-              onClick={closeMobileMenu}
-            >
-              Login
-            </Link>
+            <Authenticated>
+              <Link
+                href="/account"
+                className="text-sm transition-colors hover:text-primary"
+                onClick={closeMobileMenu}
+              >
+                <div className="flex items-center">
+                  <User className="h-6 w-6" />
+                </div>
+              </Link>
+            </Authenticated>
+            <Unauthenticated>
+              <Link
+                href="/login"
+                className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
+                onClick={closeMobileMenu}
+              >
+                Login
+              </Link>
+            </Unauthenticated>
+            <AuthLoading>
+              <div className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary">
+                <Loader2 className="h-5 w-5 animate-spin" />
+              </div>
+            </AuthLoading>
           </div>
         </div>
       </div>
