@@ -30,13 +30,13 @@ export function Navbar() {
             {/* Navigation Links */}
             <div className="hidden md:flex items-center space-x-4">
               <Link
-                href="/catalog"
+                href="/trending"
                 className="text-sm transition-colors hover:text-primary"
               >
                 Trending
               </Link>
               <Link
-                href="/cart"
+                href="/search"
                 className="text-sm transition-colors hover:text-primary"
               >
                 Search
@@ -111,14 +111,14 @@ export function Navbar() {
         <div className={`md:hidden ${isMobileMenuOpen ? "block" : "hidden"}`}>
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3 border-t">
             <Link
-              href="/catalog"
+              href="/trending"
               className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
               onClick={closeMobileMenu}
             >
               Trending
             </Link>
             <Link
-              href="/cart"
+              href="/search"
               className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
               onClick={closeMobileMenu}
             >
