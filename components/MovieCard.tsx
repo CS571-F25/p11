@@ -17,13 +17,18 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
             <CardContent className="p-0 relative">
                 <div>
                     <div className="relative aspect-[2/3] overflow-hidden">
-                        <Image
-                            src={getImageUrl(movie.poster_path)}
-                            alt={movie.title}
-                            fill
-                            className="object-cover group-hover:scale-105 transition-transform duration-300"
-                        />
-
+                        {!movie.poster_path && !movie.backdrop_path ? (
+                            <div className="aspect-[2/3] bg-background flex items-center justify-center">
+                                <p className="text-sm text-muted-foreground">No image available</p>
+                            </div>
+                        ) : (
+                            <Image
+                                src={getImageUrl(movie.poster_path ?? movie.backdrop_path)}
+                                alt={movie.title}
+                                fill
+                                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                            />
+                        )}
                         {/* Top overlay with gradient and overview text */}
                         <div className={`absolute inset-0 pointer-events-none transition-opacity duration-250 ${isExpanded ? 'opacity-100' : 'opacity-0'}`}>
                             <div className="absolute inset-0 bg-gradient-to-b from-background/100 via-background/80 to-transparent" />
@@ -61,7 +66,7 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
 
                         <div className="flex items-center justify-between mt-2 text-sm text-muted-foreground">
                             <span>
-                                {new Date(movie.release_date).getFullYear()}
+                                { new Date(movie.release_date).getFullYear() ? new Date(movie.release_date).getFullYear() : "Unknown release date"}
                             </span>
 
                             <div className="flex items-center gap-1.5 text-primary">

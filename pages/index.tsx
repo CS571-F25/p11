@@ -1,8 +1,21 @@
+import { useState } from "react";
 import { useRouter } from "next/router";
 import {Searchbar} from "@/components/Searchbar"
 import {FeaturedMovies} from "@/components/FeaturedMovies"
 
 export default function Home() {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const handleSearch = () => {
+    const trimmedQuery = searchQuery.trim();
+    if (trimmedQuery.length > 0) {
+      router.push(`/search?q=${encodeURIComponent(trimmedQuery)}`);
+    } else {
+      router.push("/search");
+    }
+  };
+
   return (
     <div className="min-h-screen">
      <section className="relative py-20 md:py-32 overflow-hidden">
@@ -15,7 +28,11 @@ export default function Home() {
             <p className="text-lg md:text-xl text-muted-foreground text-pretty">
               Search through millions of movies and TV shows. Find exactly what you want to watch tonight.
             </p>
-            <Searchbar />
+            <Searchbar 
+              value={searchQuery}
+              onChange={setSearchQuery}
+              onSubmit={handleSearch}
+            />
           </div>
         </div>
       </section>
