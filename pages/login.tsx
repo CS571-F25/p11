@@ -28,8 +28,27 @@ function SignInForm() {
           <form
             onSubmit={(event) => {
               event.preventDefault();
+              setSubmitting(true);
               const formData = new FormData(event.currentTarget);
               formData.set("flow", flow);
+
+              signIn("password", formData)
+                .then((result) => {
+                  toast.success("Login successful!");
+                  router.push("/");
+                })
+                .catch((error) => {
+                  if (
+                    error?.message?.toLowerCase().includes("invalid secret")
+                  ) {
+                    toast.error("Incorrect email or password.");
+                  } else {
+                    toast.error(error.message || "There was a problem signing in.");
+                  }
+                })
+                .finally(() => {
+                  setSubmitting(false);
+                });
               void signIn("password", formData);
             }}
           >
