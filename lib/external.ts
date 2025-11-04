@@ -16,7 +16,7 @@ const getTrendingMovies = async (pageNumber: number) => {
     }
     const data = await response.json() as { results: MovieOverview[] };
     const filteredResults = data.results.filter((movie: MovieOverview) => !!movie.release_date);
-    return {results: filteredResults};
+    return filteredResults;
 }
 
 
@@ -46,7 +46,7 @@ const getTrendingMoviesByWindow = async (
     }
     const data = await response.json() as { results: MovieOverview[] };
     const filteredResults = data.results.filter((movie: MovieOverview) => !!movie.release_date);
-    return {results: filteredResults};
+    return filteredResults;
 }
 
 export const getTrendingMoviesQueryAdvanced = (
