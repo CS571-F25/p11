@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
 import { searchMoviesQuery } from "@/lib/external";
 import { MovieCard } from "@/components/MovieCard";
-import { Searchbar } from "@/components/Searchbar";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Loader2, Search } from "lucide-react";
+import { MovieOverview } from "@/lib/types/movie";
 
 export default function SearchPage() {
   const router = useRouter();
-  const { q } = router.query;
+  const { q, language, year } = router.query;
 
   const [searchQuery, setSearchQuery] = useState<string>((q as string) || "");
   const [draftQuery, setDraftQuery] = useState<string>((q as string) || "");
@@ -16,6 +17,10 @@ export default function SearchPage() {
     const p = parseInt((router.query.page as string) || "1", 10);
     return Number.isNaN(p) ? 1 : Math.max(1, p);
   });
+  const [languageParam, setLanguageParam] = useState<string>((language as string) || "en-US");
+  const [draftLanguage, setDraftLanguage] = useState<string>((language as string) || "en-US");
+  const [yearParam, setYearParam] = useState<string>((year as string) || "");
+  const [draftYear, setDraftYear] = useState<string>((year as string) || "");
 
   // Update search query when URL query changes
   useEffect(() => {
@@ -24,17 +29,36 @@ export default function SearchPage() {
     setDraftQuery(urlQuery);
     const p = parseInt((router.query.page as string) || "1", 10);
     setPage(Number.isNaN(p) ? 1 : Math.max(1, p));
-  }, [router.query.q, router.query.page]);
+    const urlLanguage = (router.query.language as string) || "en-US";
+    setLanguageParam(urlLanguage);
+    setDraftLanguage(urlLanguage);
+    const urlYear = (router.query.year as string) || "";
+    setYearParam(urlYear);
+    setDraftYear(urlYear);
+  }, [router.query.q, router.query.page, router.query.language, router.query.year]);
 
-  const { data: searchResults, isLoading } = searchMoviesQuery(searchQuery, page);
-
+  const { data: searchResults, isLoading } = searchMoviesQuery(
+    searchQuery, 
+    page,
+    languageParam || undefined,
+    yearParam || undefined
+  );
+  
   const handleSearch = () => {
     const trimmedQuery = draftQuery.trim();
     setSearchQuery(trimmedQuery);
+    setLanguageParam(draftLanguage);
+    setYearParam(draftYear);
     setPage(1);
     const params = new URLSearchParams();
     if (trimmedQuery.length > 0) {
       params.set('q', trimmedQuery);
+    }
+    if (draftLanguage) {
+      params.set('language', draftLanguage);
+    }
+    if (draftYear) {
+      params.set('year', draftYear);
     }
     router.push({ pathname: '/search', query: Object.fromEntries(params) }, undefined, { shallow: true });
   };
@@ -46,6 +70,12 @@ export default function SearchPage() {
     const params = new URLSearchParams();
     if (searchQuery.trim().length > 0) {
       params.set('q', searchQuery.trim());
+    }
+    if (languageParam) {
+      params.set('language', languageParam);
+    }
+    if (yearParam) {
+      params.set('year', yearParam);
     }
     if (newPage > 1) {
       params.set('page', String(newPage));
@@ -61,6 +91,12 @@ export default function SearchPage() {
     if (searchQuery.trim().length > 0) {
       params.set('q', searchQuery.trim());
     }
+    if (languageParam) {
+      params.set('language', languageParam);
+    }
+    if (yearParam) {
+      params.set('year', yearParam);
+    }
     if (newPage > 1) {
       params.set('page', String(newPage));
     }
@@ -75,13 +111,66 @@ export default function SearchPage() {
           
           {/* Search Bar */}
           <div className="mb-8">
-            <Searchbar
-              value={draftQuery}
-              onChange={setDraftQuery}
-              onSubmit={handleSearch}
-              isLoading={isLoading}
-              placeholder="Search for movies..."
-            />
+            <div className="w-full max-w-4xl mx-auto">
+              <div className="relative flex items-center gap-2 flex-wrap">
+                <div className="relative flex-1 min-w-[200px]">
+                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
+                  <Input
+                    type="text"
+                    placeholder="Search for movies..."
+                    value={draftQuery}
+                    onChange={(e) => setDraftQuery(e.target.value)}
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter') {
+                        handleSearch();
+                      }
+                    }}
+                    className="pl-12 h-14 text-base bg-card border-border/50 focus-visible:ring-primary"
+                  />
+                </div>
+                <Input
+                  id="language"
+                  type="text"
+                  value={draftLanguage}
+                  onChange={(e) => setDraftLanguage(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
+                  placeholder="en-US"
+                  className="h-14 text-base bg-card border-border/50 focus-visible:ring-primary w-[120px]"
+                />
+                <Input
+                  id="year"
+                  type="text"
+                  value={draftYear}
+                  onChange={(e) => setDraftYear(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                      handleSearch();
+                    }
+                  }}
+                  placeholder="Year"
+                  className="h-14 text-base bg-card border-border/50 focus-visible:ring-primary w-[100px]"
+                />
+                <Button 
+                  size="lg" 
+                  className="h-14 px-8"
+                  onClick={handleSearch}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Searching
+                    </>
+                  ) : (
+                    "Search"
+                  )}
+                </Button>
+              </div>
+            </div>
           </div>
 
           {/* Results */}

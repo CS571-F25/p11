@@ -15,7 +15,8 @@ const getTrendingMovies = async (pageNumber: number) => {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json() as { results: MovieOverview[] };
-    return data.results;
+    const filteredResults = data.results.filter((movie: MovieOverview) => !!movie.release_date);
+    return {results: filteredResults};
 }
 
 
@@ -44,8 +45,8 @@ const getTrendingMoviesByWindow = async (
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json() as { results: MovieOverview[] };
-    console.log(data.results);
-    return data.results;
+    const filteredResults = data.results.filter((movie: MovieOverview) => !!movie.release_date);
+    return {results: filteredResults};
 }
 
 export const getTrendingMoviesQueryAdvanced = (
@@ -59,11 +60,23 @@ export const getTrendingMoviesQueryAdvanced = (
 }
 
 // Search movies by query
-const searchMovies = async (query: string, pageNumber: number) => {
+const searchMovies = async (
+    query: string, 
+    pageNumber: number,
+    language?: string,
+    year?: string
+) => {
     if (!query.trim()) {
         return { results: [], total_pages: 0, total_results: 0 };
     }
-    const url = `https://api.themoviedb.org/3/search/movie?query=${encodeURIComponent(query)}&include_adult=false&language=en-US&page=${pageNumber}`;
+    const params = new URLSearchParams();
+    params.set('query', query);
+    params.set('include_adult', 'false');
+    params.set('language', language || 'en-US');
+    if (year) params.set('year', year);
+    params.set('page', String(pageNumber));
+    
+    const url = `https://api.themoviedb.org/3/search/movie?${params.toString()}`;
     const options = {
         method: 'GET',
         headers: {
@@ -76,14 +89,19 @@ const searchMovies = async (query: string, pageNumber: number) => {
         throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json() as { results: MovieOverview[]; total_pages: number; total_results: number };
-    console.log(data);
-    return data;
+    const filteredResults = data.results.filter((movie: MovieOverview) => !!movie.release_date);
+    return {results: filteredResults, total_pages: data.total_pages, total_results: data.total_results};
 }
 
-export const searchMoviesQuery = (query: string, pageNumber: number) => {
+export const searchMoviesQuery = (
+    query: string, 
+    pageNumber: number,
+    language?: string,
+    year?: string
+) => {
     return useQuery({
-        queryKey: ['search-movies', query, pageNumber],
-        queryFn: () => searchMovies(query, pageNumber),
+        queryKey: ['search-movies', query, pageNumber, language, year],
+        queryFn: () => searchMovies(query, pageNumber, language, year),
         enabled: query.trim().length > 0,
     });
 }
