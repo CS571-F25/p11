@@ -6,6 +6,9 @@ import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 import { Loader2, ArrowLeft, Star, Calendar, Users } from "lucide-react"
 import { genresList } from "@/lib/utils"
+import { CommentSection } from "@/components/CommentSection"
+import { api } from "@/convex/_generated/api"
+import { useMutation } from "convex/react"
 
 export default function MovieDetailsPage() {
   const router = useRouter()
@@ -17,6 +20,23 @@ export default function MovieDetailsPage() {
   }, [])
 
   const { data: movie, isLoading } = getMovieDetailsQuery(id as string)
+
+  const upsertMovie = useMutation(api.movies.upsertByExternalId);
+  const [convexMovieId, setConvexMovieId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!movie) return;
+
+    upsertMovie({
+      external_id: movie.id.toString(),
+      rating: movie.vote_average,
+      overview: movie.overview || "",
+      genre: movie.genre_ids ? movie.genre_ids.join(",") : "",
+      release_year: movie.release_date ? new Date(movie.release_date).getFullYear() : 0,
+      backdrop_url: movie.backdrop_path ? `https://image.tmdb.org/t/p/w780${movie.backdrop_path}` : "",
+      poster_url: movie.poster_path ? `https://image.tmdb.org/t/p/w342${movie.poster_path}` : "",
+    }).then((id) => setConvexMovieId(id as string));
+  }, [movie, upsertMovie]);
 
   if (!isClient || !id) {
     return (
@@ -175,6 +195,8 @@ export default function MovieDetailsPage() {
                   </div>
                 </div>
               )}
+
+              <CommentSection movieId={id as string}></CommentSection>
             </main>
           </div>
         </div>
