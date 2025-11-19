@@ -4,6 +4,7 @@ import { useMutation, useQuery } from "convex/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
+import { toast } from "sonner";
 
 interface CommentsSectionProps {
   movieId: string;
@@ -26,10 +27,15 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
   const handleSubmit = async () => {
     if (!newComment.trim() || !movie) return;
 
-    await addComment({
-      movie_id: movie._id,
-      value: newComment,
-    });
+    try {
+      await addComment({
+        movie_id: movie._id,
+        value: newComment,
+      });
+    }
+    catch {
+      toast.error("Must be logged in to comment!");
+    }
 
     setNewComment("");
   };
