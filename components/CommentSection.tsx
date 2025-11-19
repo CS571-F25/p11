@@ -47,6 +47,12 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
           placeholder="Write a comment..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}
         />
         <Button onClick={handleSubmit}>Post</Button>
       </div>

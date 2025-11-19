@@ -196,7 +196,7 @@ export default function MovieDetailsPage() {
                 </div>
               )}
 
-              {/* <CommentSection movieId={id as string}></CommentSection> */}
+              <CommentSection movieId={id as string}></CommentSection>
             </main>
           </div>
         </div>
