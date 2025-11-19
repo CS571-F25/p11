@@ -1,10 +1,11 @@
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Film, User, Loader2 } from "lucide-react"
 import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
 
 export function Navbar() {
+  
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -43,7 +44,7 @@ export function Navbar() {
               </Link>
               <Authenticated>
                 <Link
-                  href="/account"
+                  href="/profile-page"
                   className="text-sm transition-colors hover:text-primary"
                   onClick={closeMobileMenu}
                 >
@@ -126,7 +127,7 @@ export function Navbar() {
             </Link>
             <Authenticated>
               <Link
-                href="/account"
+                href="/profile-page"
                 className="text-sm transition-colors hover:text-primary"
                 onClick={closeMobileMenu}
               >
