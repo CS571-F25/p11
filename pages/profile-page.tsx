@@ -17,7 +17,7 @@ export default function ProfilePage(){
 
     // Fetch current user Data
     const currentUser = useQuery(api.auth.loggedInUser);
-    const userProfile = useQuery(api.userProfiles.getCurrent); // correct way to get userID?
+    const userProfile = useQuery(api.userProfiles.getCurrent); 
 
     // Redirect unauthenticated users to login
     useEffect(() => {
@@ -42,30 +42,6 @@ export default function ProfilePage(){
             </div>
         );
     }
-
-    // Show login prompt if not authenticated --> need this... handled in login.tsx?
-    // if (!isAuthenticated) {
-    //     return (
-    //         <div className="min-h-screen flex items-center justify-center p-4">
-    //             <Card className="w-full max-w-md">
-    //                 <CardHeader>
-    //                     <CardTitle>Access Denied</CardTitle>
-    //                 </CardHeader>
-    //                 <CardContent className="space-y-4">
-    //                     <p className="text-muted-foreground">
-    //                         Please log in to view your profile
-    //                     </p>
-    //                     <Button
-    //                     className="w-full"
-    //                     onClick={() => router.push("/login")}
-    //                     >
-    //                     Go to Login
-    //                     </Button>
-    //                 </CardContent>
-    //             </Card>
-    //         </div>
-    //     )
-    // }
 
     // Handle signout
     async function handleSignout() {

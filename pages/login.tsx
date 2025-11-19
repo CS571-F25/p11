@@ -43,7 +43,7 @@ function SignInForm() {
                   ) {
                     toast.error("Incorrect email or password.");
                   } else {
-                    toast.error(error.message || "There was a problem signing in.");
+                    toast.error("invalid credentials.");
                   }
                 })
                 .finally(() => {
