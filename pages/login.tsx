@@ -49,7 +49,7 @@ function SignInForm() {
                 .finally(() => {
                   setSubmitting(false);
                 });
-              void signIn("password", formData);
+              void signIn("password", formData); // invalid sign-in error coming from here?
             }}
           >
             <div className="flex flex-col gap-6">
