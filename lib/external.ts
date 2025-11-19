@@ -105,3 +105,28 @@ export const searchMoviesQuery = (
         enabled: query.trim().length > 0,
     });
 }
+
+const getMovieDetails = async (movieId: string | number) => {
+  const url = `https://api.themoviedb.org/3/movie/${movieId}`;
+  const options = {
+    method: 'GET',
+    headers: {
+        accept: 'application/json',
+        Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`
+    }
+  }
+  const response = await fetch(url, options)
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  const data = await response.json()
+  return data
+}
+
+export const getMovieDetailsQuery = (movieId: string | number) => {
+  return useQuery({
+    queryKey: ["movie-details", movieId],
+    queryFn: () => getMovieDetails(movieId),
+    enabled: !!movieId,
+  })
+}

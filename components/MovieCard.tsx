@@ -5,14 +5,18 @@ import Image from "next/image"
 import { Star } from "lucide-react"
 import { useState } from "react"
 import { Badge } from "./ui/badge"
+import { useRouter } from "next/router"
 
 export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
     const [isExpanded, setIsExpanded] = useState(false);
+    const router = useRouter();
 
     return (
         <Card
             className={`group cursor-pointer overflow-hidden border-border/50 bg-card hover:border-primary/50 transition-all duration-100`}
-            onClick={() => setIsExpanded((v) => !v)}
+            onClick={() => router.push(`/movie/${movie.id}`)}
+            onMouseEnter={() => setIsExpanded(true)}
+            onMouseLeave={() => setIsExpanded(false)}
         >
             <CardContent className="p-0 relative">
                 <div>
