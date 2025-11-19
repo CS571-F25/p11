@@ -26,7 +26,7 @@ export default defineSchema({
 
   comments: defineTable({
     movie_id: v.id("movies"),
-    user_id: v.id("users"),
+    user_id: v.id("userProfiles"),
     value: v.string(),
     created_at: v.number(),
     parent_comment_id: v.optional(v.id("comments")),

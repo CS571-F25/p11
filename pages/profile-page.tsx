@@ -1,6 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api"; 
 import { useConvexAuth } from "convex/react";
 import { Button } from "@/components/ui/button";
@@ -9,15 +9,29 @@ import { Loader2 } from "lucide-react";
 import { useAuthActions } from "@convex-dev/auth/react";
 import { toast } from "sonner";
 import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Edit2, Check, X } from "lucide-react";
 
 export default function ProfilePage(){
     const router = useRouter(); 
     const { isLoading, isAuthenticated } = useConvexAuth(); 
     const { signOut } = useAuthActions(); 
+    const [isEditingUsername, setIsEditingUsername] = useState(false);
+    const [usernameValue, setUsernameValue] = useState("");
+    const [isUpdating, setIsUpdating] = useState(false);
+    const updateProfile = useMutation(api.userProfiles.upsert);
 
     // Fetch current user Data
     const currentUser = useQuery(api.auth.loggedInUser);
-    const userProfile = useQuery(api.userProfiles.getCurrent); 
+    const userProfile = useQuery(api.userProfiles.getCurrent);
+
+    // Initialize username value when profile loads or when starting to edit
+    useEffect(() => {
+        if (!isEditingUsername) {
+            setUsernameValue(userProfile?.username || "");
+        }
+    }, [userProfile?.username, isEditingUsername]); 
 
     // Redirect unauthenticated users to login
     useEffect(() => {
@@ -53,6 +67,55 @@ export default function ProfilePage(){
         console.error("Error signing out:", err);
         toast.warning("Error logging out!") 
         }
+    }
+
+    // Handle username update
+    async function handleUsernameUpdate() {
+        if (isUpdating) return; // Prevent double clicks
+        
+        const trimmedUsername = usernameValue.trim();
+        if (!trimmedUsername) {
+            toast.error("Username cannot be empty");
+            return;
+        }
+
+        if (trimmedUsername.length < 3) {
+            toast.error("Username must be at least 3 characters");
+            return;
+        }
+
+        // If profile exists and username hasn't changed, just exit edit mode
+        if (userProfile && trimmedUsername === userProfile.username) {
+            setIsEditingUsername(false);
+            return;
+        }
+
+        setIsUpdating(true);
+        try {
+            // If profile doesn't exist, create it with default values
+            // If it exists, update it with current values
+            await updateProfile({
+                username: trimmedUsername,
+                enable_rated_r: userProfile?.enable_rated_r ?? false,
+                avatar_file_id: userProfile?.avatar_file_id,
+            });
+            toast.success(userProfile ? "Username updated successfully!" : "Profile created successfully!");
+            setIsEditingUsername(false);
+        } catch (error: any) {
+            console.error("Error updating username:", error);
+            if (error?.message?.includes("already taken")) {
+                toast.error("Username is already taken. Please choose another.");
+            } else {
+                toast.error(error?.message || "Failed to update username");
+            }
+        } finally {
+            setIsUpdating(false);
+        }
+    }
+
+    function handleCancelEdit() {
+        setUsernameValue(userProfile?.username || "");
+        setIsEditingUsername(false);
     }
 
     // Convert creation time to date
@@ -108,12 +171,75 @@ export default function ProfilePage(){
                         </div>
 
                         <div>
-                            <p className="text-sm font-medium text-muted-foreground mb-1">
-                                Username
-                            </p>
-                            <p className="text-base font-semibold">
-                                {userProfile?.username || "N/A"}
-                            </p>
+                            <div className="flex items-center justify-between mb-1">
+                                <p className="text-sm font-medium text-muted-foreground">
+                                    Username
+                                </p>
+                                {!isEditingUsername && (
+                                    <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 w-8 p-0"
+                                        onClick={() => setIsEditingUsername(true)}
+                                    >
+                                        <Edit2 className="h-4 w-4" />
+                                    </Button>
+                                )}
+                            </div>
+                            {isEditingUsername ? (
+                                <div className="flex items-center gap-2">
+                                    <Input
+                                        value={usernameValue}
+                                        onChange={(e) => setUsernameValue(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter") {
+                                                e.preventDefault();
+                                                handleUsernameUpdate();
+                                            } else if (e.key === "Escape") {
+                                                handleCancelEdit();
+                                            }
+                                        }}
+                                        placeholder="Enter username"
+                                        minLength={3}
+                                        className="flex-1"
+                                        autoFocus
+                                    />
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 w-8 p-0"
+                                        disabled={isUpdating}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            handleUsernameUpdate();
+                                        }}
+                                    >
+                                        {isUpdating ? (
+                                            <Loader2 className="h-4 w-4 text-green-600 animate-spin" />
+                                        ) : (
+                                            <Check className="h-4 w-4 text-green-600" />
+                                        )}
+                                    </Button>
+                                    <Button
+                                        type="button"
+                                        variant="ghost"
+                                        size="sm"
+                                        className="h-8 w-8 p-0"
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleCancelEdit();
+                                        }}
+                                    >
+                                        <X className="h-4 w-4 text-red-600" />
+                                    </Button>
+                                </div>
+                            ) : (
+                                <p className="text-base font-semibold">
+                                    {userProfile?.username || "N/A"}
+                                </p>
+                            )}
                         </div>
                             <p className="text-sm font-medium text-muted-foreground mb-1">
                                 Member since
