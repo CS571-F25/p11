@@ -53,6 +53,12 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
           placeholder="Write a comment..."
           value={newComment}
           onChange={(e) => setNewComment(e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && !e.shiftKey) {
+              e.preventDefault();
+              handleSubmit();
+            }
+          }}
         />
         <Button onClick={handleSubmit}>Post</Button>
       </div>
@@ -60,6 +66,12 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
       <div className="space-y-4">
         {comments.map((comment) => (
           <div key={comment._id} className="p-4 border rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-sm font-semibold">{comment.username}</span>
+              <span className="text-xs text-muted-foreground">
+                {new Date(comment.created_at).toLocaleDateString()}
+              </span>
+            </div>
             <div className="text-sm text-muted-foreground">{comment.value}</div>
           </div>
         ))}
