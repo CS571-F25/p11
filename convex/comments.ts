@@ -12,16 +12,10 @@ export const add = mutation({
     const authUserId = await getAuthUserId(ctx);
     if (!authUserId) throw new Error("Must be logged in");
 
-    const profile = await ctx.db
-      .query("userProfiles")
-      .withIndex("by_user_id", (q) => q.eq("userId", authUserId))
-      .unique();
-    if (!profile) throw new Error("Profile required");
-
     const now = Date.now();
     return await ctx.db.insert("comments", {
       movie_id: args.movie_id,
-      user_id: profile._id,
+      user_id: authUserId,
       value: args.value,
       created_at: now,
       parent_comment_id: args.parent_comment_id,
