@@ -82,7 +82,7 @@ export default function WatchQueue(){
                                     )}
                                     
                                     {/* Overlay on hover */}
-                                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-70 transition-all duration-300 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-75">
+                                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-70 transition-all duration-300 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-80">
                                         <button
                                             onClick={() => handleMarkAsWatched(movie)}
                                             className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-full transition-colors"

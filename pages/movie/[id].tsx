@@ -101,6 +101,20 @@ export default function MovieDetailsPage() {
                 <span className="text-sm">{movie.runtime} minutes</span>
               </div>
             )}
+
+            {/* Genres */}
+            {movie.genres && movie.genres.length > 0 && (
+              <div className="space-y-2">
+                <div className="text-sm font-semibold text-muted-foreground">Genres</div>
+                <div className="flex flex-wrap gap-2">
+                  {movie.genres.map((genre: { id: number; name: string }) => (
+                    <Badge key={genre.id} variant="outline" className="bg-transparent text-white border-primary">
+                      {genre.name}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </Card>
 
           {/* Watch Providers */}
@@ -248,20 +262,6 @@ export default function MovieDetailsPage() {
             <h1 className="text-4xl md:text-5xl font-bold mb-2">{movie.title}</h1>
             {movie.tagline && <p className="text-lg text-muted-foreground italic">{movie.tagline}</p>}
           </div>
-
-          {/* Genres */}
-          {movie.genre_ids && movie.genre_ids.length > 0 && (
-            <div className="space-y-2">
-              <h2 className="text-sm font-semibold text-muted-foreground uppercase">Genres</h2>
-              <div className="flex flex-wrap gap-2">
-                {getGenreNames(movie.genre_ids).map((genre) => (
-                  <Badge key={genre} variant="secondary">
-                    {genre}
-                  </Badge>
-                ))}
-              </div>
-            </div>
-          )}
 
           {/* Overview */}
           {movie.overview && (

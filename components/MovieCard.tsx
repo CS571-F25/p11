@@ -59,14 +59,14 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
                                 .filter((n): n is string => Boolean(n));
                             return genreNames.length > 0 ? (
                                 <div className="mt-2 flex flex-wrap gap-1.5">
-                                    {genreNames.slice(0, 2).map((name) => (
+                                    {genreNames.slice(0, 1).map((name) => (
                                         <Badge key={name} variant="secondary" className="px-2 py-0.5 text-xs">
                                             {name}
                                         </Badge>
                                     ))}
-                                    {genreNames.length > 2 && (
+                                    {genreNames.length > 1 && (
                                         <Badge variant="outline" className="px-2 py-0.5 text-xs">
-                                            +{genreNames.length - 2}
+                                            +{genreNames.length - 1}
                                         </Badge>
                                     )}
                                 </div>
