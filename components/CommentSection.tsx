@@ -1,10 +1,11 @@
 "use client";
 import { useEffect, useState } from "react";
-import { useMutation, useQuery } from "convex/react";
+import { useMutation, useQueries, useQuery } from "convex/react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
+import { Comment } from "./Comment";
 
 interface CommentsSectionProps {
   movieId: string;
@@ -17,10 +18,14 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
     external_id: movieId,
   });
 
-  const comments = useQuery(
+  const queryComments = useQuery(
     api.comments.listByMovie,
     movie ? { movie_id: movie._id } : "skip"
   );
+
+  const comments = queryComments ? queryComments.reverse() : [];
+
+  const currentUser = useQuery(api.userProfiles.getCurrent);
 
   const addComment = useMutation(api.comments.add);
 
@@ -58,11 +63,9 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
       </div>
 
       <div className="space-y-4">
-        {comments.map((comment) => (
-          <div key={comment._id} className="p-4 border rounded-lg">
-            <div className="text-sm text-muted-foreground">{comment.value}</div>
-          </div>
-        ))}
+        {comments.map((comment) => {
+          return <Comment key={comment._id} comment={comment}></Comment>
+        })}
       </div>
     </div>
   );

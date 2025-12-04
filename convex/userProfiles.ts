@@ -17,6 +17,18 @@ export const getCurrent = query({
   },
 });
 
+export const getUserById = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("userProfiles")
+      .withIndex("by_user_id", (q) => q.eq("userId", args.userId))
+      .unique();
+  }
+})
+
 export const upsert = mutation({
   args: {
     username: v.string(),
