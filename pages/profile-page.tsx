@@ -146,24 +146,24 @@ export default function ProfilePage(){
     return(
         <div className="flex flex-col">
         {/* Include Profile Navigation Bar */}
-            <Menubar className="mx-auto flex gap-4">
+            <Menubar className="mx-auto flex gap-4 mb-8">
                 <MenubarMenu>
                     <MenubarTrigger 
-                    className="hover:bg-primary hover:text-black rounded-md"
+                    className="bg-primary text-black rounded-md px-4 py-2"
                     onClick={() => router.push("/profile-page")}>
                         Profile
                     </MenubarTrigger>
                 </MenubarMenu>
                 <MenubarMenu>
                     <MenubarTrigger 
-                    className="hover:bg-primary hover:text-black rounded-md"
+                    className="hover:bg-primary hover:text-black rounded-md px-4 py-2"
                     onClick={() => router.push("/watched")}>
                         Watched
                     </MenubarTrigger>
                 </MenubarMenu>
                 <MenubarMenu>
                     <MenubarTrigger 
-                    className="hover:bg-primary hover:text-black rounded-md"
+                    className="hover:bg-primary hover:text-black rounded-md px-4 py-2"
                     onClick={() => router.push("/watch-queue")}>
                         Movie Queue
                     </MenubarTrigger>
@@ -172,7 +172,7 @@ export default function ProfilePage(){
         <div className="min-h-screen py-10 md:py-14">
             <div className="container mx-auto max-w-md">
                 <motion.div
-                initial={{x: "-100%"}}
+                initial={{x: "100%"}}
                 animate={{x: 0}}
                 exit={{x: "-100%"}}
                 transition={{duration: 0.6}}
