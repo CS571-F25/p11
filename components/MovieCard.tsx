@@ -2,14 +2,19 @@ import { MovieOverview } from "@/lib/types/movie"
 import { Card, CardContent } from "./ui/card"
 import { getGenreNameById, getImageUrl } from "@/lib/utils"
 import Image from "next/image"
-import { Star } from "lucide-react"
+import { Star, Check, Eye, Plus } from "lucide-react"
 import { useState } from "react"
 import { Badge } from "./ui/badge"
 import { useRouter } from "next/router"
+import { useMovieLists } from "@/lib/movie-lists-context"
 
 export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
     const [isExpanded, setIsExpanded] = useState(false);
     const router = useRouter();
+    const { addToWatched, addToQueue, isWatched, isInQueue } = useMovieLists();
+
+    const watched = isWatched(movie.id);
+    const inQueue = isInQueue(movie.id);
 
     return (
         <Card
@@ -79,6 +84,46 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
                                     {movie.vote_average?.toFixed?.(1) ?? "-"}
                                 </span>
                             </div>
+                        </div>
+                        {/* Action Buttons */}
+                        <div className="flex gap-2 mt-3">
+                            {/* Add to Watched Button */}
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    addToWatched(movie);
+                                }}
+                                disabled={watched}
+                                className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all ${
+                                    watched 
+                                        ? 'bg-green-600 text-white cursor-default' 
+                                        : 'bg-secondary hover:bg-green-600 hover:text-white'
+                                }`}
+                                title={watched ? 'Already watched' : 'Mark as watched'}
+                            >
+                                {watched ? <Check size={14} /> : <Eye size={14} />}
+                                <span>{watched ? 'Watched' : 'Watch'}</span>
+                            </button>
+
+                            {/* Add to Queue Button - only show if not watched */}
+                            {!watched && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        addToQueue(movie);
+                                    }}
+                                    disabled={inQueue}
+                                    className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 rounded-md text-xs font-medium transition-all ${
+                                        inQueue 
+                                            ? 'bg-blue-600 text-white cursor-default' 
+                                            : 'bg-secondary hover:bg-blue-600 hover:text-white'
+                                    }`}
+                                    title={inQueue ? 'Already in queue' : 'Add to queue'}
+                                >
+                                    {inQueue ? <Check size={14} /> : <Plus size={14} />}
+                                    <span>{inQueue ? 'Queued' : 'Queue'}</span>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

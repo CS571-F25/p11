@@ -12,6 +12,9 @@ import { Avatar, AvatarFallback, AvatarImage } from "@radix-ui/react-avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Edit2, Check, X } from "lucide-react";
+import { Menubar, MenubarItem } from "@/components/ui/menubar"
+import { MenubarMenu, MenubarTrigger } from "@radix-ui/react-menubar";
+import { motion } from 'framer-motion';
 
 export default function ProfilePage(){
     const router = useRouter(); 
@@ -141,8 +144,39 @@ export default function ProfilePage(){
     }
 
     return(
+        <div className="flex flex-col">
+        {/* Include Profile Navigation Bar */}
+            <Menubar className="mx-auto flex gap-4 mb-8">
+                <MenubarMenu>
+                    <MenubarTrigger 
+                    className="bg-primary text-black rounded-md px-4 py-2"
+                    onClick={() => router.push("/profile-page")}>
+                        Profile
+                    </MenubarTrigger>
+                </MenubarMenu>
+                <MenubarMenu>
+                    <MenubarTrigger 
+                    className="hover:bg-primary hover:text-black rounded-md px-4 py-2"
+                    onClick={() => router.push("/watched")}>
+                        Watched
+                    </MenubarTrigger>
+                </MenubarMenu>
+                <MenubarMenu>
+                    <MenubarTrigger 
+                    className="hover:bg-primary hover:text-black rounded-md px-4 py-2"
+                    onClick={() => router.push("/watch-queue")}>
+                        Movie Queue
+                    </MenubarTrigger>
+                </MenubarMenu>
+            </Menubar>
         <div className="min-h-screen py-10 md:py-14">
-            <div className="container mx-auto px-4 max-w-md">
+            <div className="container mx-auto max-w-md">
+                <motion.div
+                initial={{x: "100%"}}
+                animate={{x: 0}}
+                exit={{x: "-100%"}}
+                transition={{duration: 0.6}}
+                >
                 <Card>
                     <CardHeader style={{paddingTop: 16}}>
                         <CardTitle className="text-2xl">Your Profile</CardTitle>
@@ -260,8 +294,11 @@ export default function ProfilePage(){
                         </Button>
                     </CardContent>
                 </Card>
+                </motion.div>
             </div>
         </div>
+    </div>
+
     )
 
 }
