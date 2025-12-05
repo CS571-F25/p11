@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { api } from "@/convex/_generated/api";
 import { toast } from "sonner";
+import { Comment } from "./Comment";
 
 interface CommentsSectionProps {
   movieId: string;
@@ -64,16 +65,8 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
       </div>
 
       <div className="space-y-4">
-        {comments.map((comment) => (
-          <div key={comment._id} className="p-4 border rounded-lg">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm font-semibold">{comment.username}</span>
-              <span className="text-xs text-muted-foreground">
-                {new Date(comment.created_at).toLocaleDateString()}
-              </span>
-            </div>
-            <div className="text-sm text-muted-foreground">{comment.value}</div>
-          </div>
+        {comments.toReversed().map((comment) => (
+          <Comment key={comment._id} comment={comment}></Comment>
         ))}
       </div>
     </div>
