@@ -15,7 +15,7 @@ type SortOption = "newest" | "oldest" | "most_liked" | "most_disliked";
 
 export function CommentSection({ movieId }: CommentsSectionProps) {
   const [newComment, setNewComment] = useState("");
-  const [sortBy, setSortBy] = useState<SortOption>("newest");
+  const [sortBy, setSortBy] = useState<SortOption>("most_liked");
   const { isAuthenticated } = useConvexAuth();
 
   const movie = useQuery(api.movies.getByExternalId, {
@@ -24,7 +24,7 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
 
   const comments = useQuery(
     api.comments.listByMovie,
-    movie ? { movie_id: movie._id } : "skip"
+    movie ? { movie_id: movie._id } : "skip",
   );
 
   const addComment = useMutation(api.comments.add);
@@ -49,14 +49,14 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
 
   const sortedComments = [...comments].sort((a, b) => {
     switch (sortBy) {
-      case "newest":
-        return b.created_at - a.created_at;
-      case "oldest":
-        return a.created_at - b.created_at;
       case "most_liked":
         return ((b.like_count || 0) - (b.dislike_count || 0)) - ((a.like_count || 0) - (a.dislike_count || 0));
       case "most_disliked":
         return ((b.dislike_count || 0) - (b.like_count || 0)) - ((a.dislike_count || 0) - (a.like_count || 0))
+      case "newest":
+        return b.created_at - a.created_at;
+      case "oldest":
+        return a.created_at - b.created_at;
       default:
         return 0;
     }
@@ -71,10 +71,10 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
           onChange={(e) => setSortBy(e.target.value as SortOption)}
           className="border rounded px-2 py-1 text-sm bg-gray-900 text-white"
         >
-          <option value="newest">Newest</option>
-          <option value="oldest">Oldest</option>
           <option value="most_liked">Most Liked</option>
           <option value="most_disliked">Most Disliked</option>
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
         </select>
       </div>
 
@@ -96,7 +96,7 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
       </div>
 
       <div className="space-y-4">
-        {sortedComments.map((comment) => (
+        {sortedComments.filter(comment => !comment.parent_comment_id).map((comment) => (
           <Comment key={comment._id} comment={comment} />
         ))}
       </div>

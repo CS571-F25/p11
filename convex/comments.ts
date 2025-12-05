@@ -50,6 +50,47 @@ export const listByMovie = query({
   },
 });
 
+export const listByParent = query({
+  args: { parent_comment_id: v.id("comments") },
+  handler: async (ctx, { parent_comment_id }) => {
+    const comments = await ctx.db
+      .query("comments")
+      .withIndex("by_parent", (q) => q.eq("parent_comment_id", parent_comment_id))
+      .collect();
+
+    return await Promise.all(
+      comments.map(async (comment) => {
+        const user = await ctx.db.get(comment.user_id);
+        return {
+          ...comment,
+          username: user?.username || "Unknown",
+        };
+      })
+    );
+  },
+});
+
+
+export const deleteComment = mutation({
+  args: { commentId: v.id("comments") },
+  handler: async (ctx, { commentId }) => {
+    const authUserId = await getAuthUserId(ctx);
+    if (!authUserId) throw new Error("Must be logged in");
+
+    const userProfileId = await getOrCreateUserProfile(ctx, authUserId);
+
+    const comment = await ctx.db.get(commentId);
+    if (!comment) throw new Error("Comment not found");
+
+    if (comment.user_id !== userProfileId) {
+      throw new Error("You can only delete your own comments");
+    }
+
+    await ctx.db.delete(commentId);
+    return { success: true };
+  },
+});
+
 export const like = mutation({
   args: { commentId: v.id("comments") },
   handler: async (ctx, { commentId }) => {
