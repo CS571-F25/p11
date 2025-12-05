@@ -1,8 +1,15 @@
 import Link from "next/link";
-import Image from "next/image";
-import { useContext, useState } from "react";
-import { Film, User, Loader2 } from "lucide-react"
+import { useState } from "react";
+import { Film, User, Loader2, Eye, List } from "lucide-react"
 import { Authenticated, Unauthenticated, AuthLoading } from "convex/react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export function Navbar() {
   
@@ -40,15 +47,35 @@ export function Navbar() {
                 Search
               </Link>
               <Authenticated>
-                <Link
-                  href="/profile-page"
-                  className="text-sm transition-colors hover:text-primary"
-                  onClick={closeMobileMenu}
-                >
-                  <div className="flex items-center">
-                    <User className="h-6 w-6" aria-label="Profile" />
-                  </div>
-                </Link>
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="text-sm transition-colors hover:text-primary p-2 rounded-md hover:bg-accent">
+                      <User className="h-6 w-6" aria-label="Profile menu" />
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-48">
+                    <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link href="/profile-page" className="flex items-center gap-2 cursor-pointer">
+                        <User className="h-4 w-4" />
+                        <span>Profile</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/watched" className="flex items-center gap-2 cursor-pointer">
+                        <Eye className="h-4 w-4" />
+                        <span>Watched Movies</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link href="/watch-queue" className="flex items-center gap-2 cursor-pointer">
+                        <List className="h-4 w-4" />
+                        <span>Movie Queue</span>
+                      </Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </Authenticated>
               <Unauthenticated>
                 <Link
@@ -123,15 +150,38 @@ export function Navbar() {
               Search
             </Link>
             <Authenticated>
-              <Link
-                href="/profile-page"
-                className="text-sm transition-colors hover:text-primary"
-                onClick={closeMobileMenu}
-              >
-                <div className="flex items-center">
-                  <User className="h-6 w-6" aria-label="Profile" />
-                </div>
-              </Link>
+              <div className="space-y-1">
+                <Link
+                  href="/profile-page"
+                  className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
+                  onClick={closeMobileMenu}
+                >
+                  <div className="flex items-center gap-2">
+                    <User className="h-4 w-4" />
+                    <span>Profile</span>
+                  </div>
+                </Link>
+                <Link
+                  href="/watched"
+                  className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
+                  onClick={closeMobileMenu}
+                >
+                  <div className="flex items-center gap-2">
+                    <Eye className="h-4 w-4" />
+                    <span>Watched Movies</span>
+                  </div>
+                </Link>
+                <Link
+                  href="/watch-queue"
+                  className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary"
+                  onClick={closeMobileMenu}
+                >
+                  <div className="flex items-center gap-2">
+                    <List className="h-4 w-4" />
+                    <span>Movie Queue</span>
+                  </div>
+                </Link>
+              </div>
             </Authenticated>
             <Unauthenticated>
               <Link
