@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { searchMoviesQuery } from "@/lib/external";
 import { MovieCard } from "@/components/MovieCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Loader2, Search } from "lucide-react";
 import { MovieOverview } from "@/lib/types/movie";
 
@@ -104,74 +106,86 @@ export default function SearchPage() {
   };
 
   return (
-    <div className="min-h-screen">
-      <section className="py-10 md:py-14">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold mb-8">Search Movies</h1>
-          
-          {/* Search Bar */}
-          <div className="mb-8">
-            <div className="w-full max-w-4xl mx-auto">
-              <div className="relative flex items-center gap-2 flex-wrap">
-                <div className="relative flex-1 min-w-[200px]">
-                  <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" />
-                  <Input
-                    type="text"
-                    placeholder="Search for movies..."
-                    value={draftQuery}
-                    onChange={(e) => setDraftQuery(e.target.value)}
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        handleSearch();
-                      }
-                    }}
-                    className="pl-12 h-14 text-base bg-card border-border/50 focus-visible:ring-primary"
-                  />
+    <>
+      <Head>
+        <title>Search Movies - ReelFindr</title>
+      </Head>
+      <div className="min-h-screen">
+        <section className="py-10 md:py-14">
+          <div className="container mx-auto px-4">
+            <h1 className="text-3xl md:text-4xl font-bold mb-8">Search Movies</h1>
+            
+            {/* Search Bar */}
+            <div className="mb-8">
+              <div className="w-full max-w-4xl mx-auto">
+                <div className="relative flex items-end gap-2 flex-wrap">
+                  <div className="relative flex-1 min-w-[200px]">
+                    <Label htmlFor="search-query" className="sr-only">Search for movies</Label>
+                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground pointer-events-none" aria-label="Search icon" aria-hidden="true" />
+                    <Input
+                      id="search-query"
+                      type="text"
+                      placeholder="Search for movies..."
+                      value={draftQuery}
+                      onChange={(e) => setDraftQuery(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
+                      className="pl-12 h-14 text-base bg-card border-border/50 focus-visible:ring-primary"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Label htmlFor="language" className="text-sm text-muted-foreground">Language</Label>
+                    <Input
+                      id="language"
+                      type="text"
+                      value={draftLanguage}
+                      onChange={(e) => setDraftLanguage(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
+                      placeholder="en-US"
+                      className="h-14 text-base bg-card border-border/50 focus-visible:ring-primary w-[120px]"
+                    />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <Label htmlFor="year" className="text-sm text-muted-foreground">Year</Label>
+                    <Input
+                      id="year"
+                      type="text"
+                      value={draftYear}
+                      onChange={(e) => setDraftYear(e.target.value)}
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          handleSearch();
+                        }
+                      }}
+                      placeholder="Year"
+                      className="h-14 text-base bg-card border-border/50 focus-visible:ring-primary w-[100px]"
+                    />
+                  </div>
+                  <Button 
+                    size="lg" 
+                    className="h-14 px-8"
+                    onClick={handleSearch}
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="h-4 w-4 mr-2 animate-spin" aria-label="Searching" />
+                        Searching
+                      </>
+                    ) : (
+                      "Search"
+                    )}
+                  </Button>
                 </div>
-                <Input
-                  id="language"
-                  type="text"
-                  value={draftLanguage}
-                  onChange={(e) => setDraftLanguage(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSearch();
-                    }
-                  }}
-                  placeholder="en-US"
-                  className="h-14 text-base bg-card border-border/50 focus-visible:ring-primary w-[120px]"
-                />
-                <Input
-                  id="year"
-                  type="text"
-                  value={draftYear}
-                  onChange={(e) => setDraftYear(e.target.value)}
-                  onKeyPress={(e) => {
-                    if (e.key === 'Enter') {
-                      handleSearch();
-                    }
-                  }}
-                  placeholder="Year"
-                  className="h-14 text-base bg-card border-border/50 focus-visible:ring-primary w-[100px]"
-                />
-                <Button 
-                  size="lg" 
-                  className="h-14 px-8"
-                  onClick={handleSearch}
-                  disabled={isLoading}
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                      Searching
-                    </>
-                  ) : (
-                    "Search"
-                  )}
-                </Button>
               </div>
             </div>
-          </div>
 
           {/* Results */}
           {searchQuery.trim().length === 0 ? (
@@ -230,9 +244,10 @@ export default function SearchPage() {
               </p>
             </div>
           )}
-        </div>
-      </section>
-    </div>
+          </div>
+        </section>
+      </div>
+    </>
   );
 }
 

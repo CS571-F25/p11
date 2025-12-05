@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { MovieOverview } from "./types/movie";
+import { MovieOverview, WatchProvidersResponse } from "./types/movie";
 
 const getTrendingMovies = async (pageNumber: number) => {
     const url = `https://api.themoviedb.org/3/trending/movie/week?language=en-US&page=${pageNumber}`;
@@ -127,6 +127,57 @@ export const getMovieDetailsQuery = (movieId: string | number) => {
   return useQuery({
     queryKey: ["movie-details", movieId],
     queryFn: () => getMovieDetails(movieId),
+    enabled: !!movieId,
+  })
+}
+
+const getMovieWatchProviders = async (movieId: string | number) => {
+  const url = `https://api.themoviedb.org/3/movie/${movieId}/watch/providers`;
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`
+    }
+  }
+  const response = await fetch(url, options)
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  const data = await response.json() as WatchProvidersResponse
+  return data
+}
+
+export const getMovieWatchProvidersQuery = (movieId: string | number) => {
+  return useQuery({
+    queryKey: ["movie-watch-providers", movieId],
+    queryFn: () => getMovieWatchProviders(movieId),
+    enabled: !!movieId,
+  })
+}
+
+const getMovieRecommendations = async (movieId: string | number) => {
+  const url = `https://api.themoviedb.org/3/movie/${movieId}/recommendations?language=en-US&page=1`;
+  const options = {
+    method: 'GET',
+    headers: {
+      accept: 'application/json',
+      Authorization: `Bearer ${process.env.NEXT_PUBLIC_TMDB_ACCESS_TOKEN}`
+    }
+  }
+  const response = await fetch(url, options)
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+  const data = await response.json() as { results: MovieOverview[] }
+  const filteredResults = data.results.filter((movie: MovieOverview) => !!movie.release_date);
+  return filteredResults;
+}
+
+export const getMovieRecommendationsQuery = (movieId: string | number) => {
+  return useQuery({
+    queryKey: ["movie-recommendations", movieId],
+    queryFn: () => getMovieRecommendations(movieId),
     enabled: !!movieId,
   })
 }

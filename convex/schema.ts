@@ -26,13 +26,22 @@ export default defineSchema({
 
   comments: defineTable({
     movie_id: v.id("movies"),
-    user_id: v.id("users"),
+    user_id: v.id("userProfiles"),
     value: v.string(),
     created_at: v.number(),
     parent_comment_id: v.optional(v.id("comments")),
     like_count: v.optional(v.number()),
     dislike_count: v.optional(v.number()),
   }).index("by_movie", ["movie_id"]).index("by_parent", ["parent_comment_id"]),
+
+  commentReactions: defineTable({
+    comment_id: v.id("comments"),
+    user_id: v.id("userProfiles"),
+    reaction: v.union(v.literal("like"), v.literal("dislike")),
+    created_at: v.number(),
+    updated_at: v.number(),
+  })
+  .index("by_comment", ["comment_id"]).index("by_comment_user", ["comment_id", "user_id"]),
 
   reactions: defineTable({
     user_id: v.id("userProfiles"),

@@ -21,10 +21,7 @@ export function Navbar() {
       <div className="container mx-auto">
         <div className="flex h-24 items-center justify-between">
           {/* Logo/Brand */}
-          <div className="flex items-center gap-2">
-            <Link href="/"> <Film className="h-8 w-8 text-primary" /> </Link>
-            <Link href="/"> <h1 className="text-2xl font-bold text-balance">ReelFindr</h1> </Link>
-          </div>
+          <Link href="/" className="flex items-center gap-2"> <Film className="h-8 w-8 text-primary" aria-label="ReelFindr logo" /> <h1 className="text-2xl font-bold text-balance">ReelFindr</h1> </Link>
 
           {/* Right side - Navigation Links and Theme toggle */}
           <div className="flex items-center justify-center space-x-4">
@@ -49,7 +46,7 @@ export function Navbar() {
                   onClick={closeMobileMenu}
                 >
                   <div className="flex items-center">
-                    <User className="h-6 w-6" />
+                    <User className="h-6 w-6" aria-label="Profile" />
                   </div>
                 </Link>
               </Authenticated>
@@ -64,7 +61,7 @@ export function Navbar() {
               </Unauthenticated>
               <AuthLoading>
                 <div className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary">
-                  <Loader2 className="h-5 w-5 animate-spin" />
+                  <Loader2 className="h-5 w-5 animate-spin" aria-label="Loading" />
                 </div>
               </AuthLoading>
             </div>
@@ -132,7 +129,7 @@ export function Navbar() {
                 onClick={closeMobileMenu}
               >
                 <div className="flex items-center">
-                  <User className="h-6 w-6" />
+                  <User className="h-6 w-6" aria-label="Profile" />
                 </div>
               </Link>
             </Authenticated>
@@ -147,7 +144,7 @@ export function Navbar() {
             </Unauthenticated>
             <AuthLoading>
               <div className="block px-3 py-2 text-sm font-medium transition-colors hover:text-primary">
-                <Loader2 className="h-5 w-5 animate-spin" />
+                <Loader2 className="h-5 w-5 animate-spin" aria-label="Loading" />
               </div>
             </AuthLoading>
           </div>
