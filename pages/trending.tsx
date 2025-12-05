@@ -35,7 +35,6 @@ export default function TrendingPage() {
     const r = parseFloat((query.maxRating as string) || "10");
     return Number.isNaN(r) ? 10 : Math.min(10, Math.max(0, r));
   });
-  const [search, setSearch] = useState<string>((query.q as string) || "");
   const [genreIds, setGenreIds] = useState<number[]>(() => {
     const raw = (query.genre as string) || "";
     if (!raw) return [];
@@ -46,14 +45,12 @@ export default function TrendingPage() {
   const [draftTimeWindow, setDraftTimeWindow] = useState<'day' | 'week'>(timeWindow);
   const [draftMinRating, setDraftMinRating] = useState<number>(minRating);
   const [draftMaxRating, setDraftMaxRating] = useState<number>(maxRating);
-  const [draftSearch, setDraftSearch] = useState<string>(search);
   const [draftGenreIds, setDraftGenreIds] = useState<number[]>(genreIds);
 
   const hasUnapplied = useMemo(() => {
     if (draftTimeWindow !== timeWindow) return true;
     if (draftMinRating !== minRating) return true;
     if (draftMaxRating !== maxRating) return true;
-    if ((draftSearch || '').trim() !== (search || '').trim()) return true;
     if (draftGenreIds.length !== genreIds.length) return true;
     const a = [...draftGenreIds].sort((x, y) => x - y);
     const b = [...genreIds].sort((x, y) => x - y);
@@ -61,7 +58,7 @@ export default function TrendingPage() {
       if (a[i] !== b[i]) return true;
     }
     return false;
-  }, [draftTimeWindow, draftMinRating, draftMaxRating, draftSearch, draftGenreIds, timeWindow, minRating, maxRating, search, genreIds]);
+  }, [draftTimeWindow, draftMinRating, draftMaxRating, draftGenreIds, timeWindow, minRating, maxRating, genreIds]);
 
   const { data: entries, isLoading } = getTrendingMoviesQueryAdvanced(page, timeWindow);
 
@@ -70,17 +67,14 @@ export default function TrendingPage() {
     return list.filter((m) => {
       const rating = m.vote_average ?? 0;
       const withinRange = rating >= Math.min(minRating, maxRating) && rating <= Math.max(minRating, maxRating);
-      const matchesSearch = search.trim().length === 0 || (m.title || "").toLowerCase().includes(search.trim().toLowerCase());
       const movieGenres = m.genre_ids || [];
       const matchesGenres = genreIds.length === 0 || movieGenres.some((id) => genreIds.includes(id));
-      return withinRange && matchesSearch && matchesGenres;
+      return withinRange && matchesGenres;
     });
-  }, [entries, minRating, maxRating, search, genreIds]);
+  }, [entries, minRating, maxRating, genreIds]);
 
   const handlePrev = () => setPage((p) => Math.max(1, p - 1));
   const handleNext = () => setPage((p) => p + 1);
-
-  // Do not auto-apply filters; Search/Reset will apply changes
 
   return (
     <div className="min-h-screen">
@@ -102,15 +96,6 @@ export default function TrendingPage() {
                       <SelectItem value="week">This Week</SelectItem>
                     </SelectContent>
                   </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Search title</Label>
-                  <Input
-                    value={draftSearch}
-                    placeholder="e.g. Dune"
-                    onChange={(e) => setDraftSearch(e.target.value)}
-                  />
                 </div>
 
                 <div className="space-y-2">
@@ -194,7 +179,7 @@ export default function TrendingPage() {
 
                 {hasUnapplied && (
                   <div className="text-xs text-amber-500 bg-amber-500/10 border border-amber-500/30 rounded px-2 py-1">
-                    You have unapplied changes. Press Search to apply.
+                    You have unapplied changes. Press Apply to apply.
                   </div>
                 )}
                 
@@ -206,7 +191,6 @@ export default function TrendingPage() {
                       setTimeWindow(draftTimeWindow);
                       setMinRating(draftMinRating);
                       setMaxRating(draftMaxRating);
-                      setSearch(draftSearch);
                       setGenreIds(draftGenreIds);
                       setPage(1);
                       // Update URL only on explicit search
@@ -214,12 +198,11 @@ export default function TrendingPage() {
                       if (draftTimeWindow !== 'week') params.set('window', draftTimeWindow);
                       if (draftMinRating > 0) params.set('minRating', String(draftMinRating));
                       if (draftMaxRating < 10) params.set('maxRating', String(draftMaxRating));
-                      if (draftSearch.trim().length > 0) params.set('q', draftSearch.trim());
                       if (draftGenreIds.length > 0) params.set('genre', draftGenreIds.join(','));
                       router.replace({ pathname: '/trending', query: Object.fromEntries(params) }, undefined, { shallow: true });
                     }}
                   >
-                    Search
+                    Apply
                   </Button>
                   <Button
                     variant="outline"
@@ -229,12 +212,10 @@ export default function TrendingPage() {
                       setDraftTimeWindow('week');
                       setDraftMinRating(0);
                       setDraftMaxRating(10);
-                      setDraftSearch("");
                       setDraftGenreIds([]);
                       setTimeWindow('week');
                       setMinRating(0);
                       setMaxRating(10);
-                      setSearch("");
                       setGenreIds([]);
                       setPage(1);
                       router.replace({ pathname: '/trending', query: {} }, undefined, { shallow: true });

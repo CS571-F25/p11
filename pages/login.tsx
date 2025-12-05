@@ -19,9 +19,9 @@ function SignInForm() {
     <div>
       <Card className="flex !w-1/2 mx-auto mt-10 p-10 gap-10">
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
+          <CardTitle>{flow === "signIn" ? "Login to your account" : "Create an account"}</CardTitle>
           <CardDescription>
-            Enter your email below to login to your account
+            {flow === "signIn" ? "Enter your email below to login to your account" : "Enter your email below to create an account"}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -75,12 +75,6 @@ function SignInForm() {
                       </Tooltip>
                     </TooltipProvider>
                   )}
-                  <a
-                    href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
-                  >
-                    Forgot your password?
-                  </a>
                 </div>
 
                 <Input
@@ -107,11 +101,6 @@ function SignInForm() {
               </button>
             </div>
           </form>
-          <div className="flex items-center justify-center my-3">
-            <hr className="my-4 grow border-gray-200" />
-            <span className="mx-4 text-secondary">or</span>
-            <hr className="my-4 grow border-gray-200" />
-          </div>
         </CardContent>
       </Card>
     </div>
