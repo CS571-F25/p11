@@ -66,6 +66,15 @@ export async function getOrCreateUserProfile(ctx: MutationCtx, authUserId: Id<"u
   });
 }
 
+export const getOrCreateCurrentUser = mutation({
+  handler: async (ctx) => {
+    const authUserId = await getAuthUserId(ctx);
+    if (!authUserId) return null;
+
+    return await getOrCreateUserProfile(ctx, authUserId);
+  },
+});
+
 export const createOnSignUp = mutation({
   args: {
     username: v.string(),

@@ -50,4 +50,77 @@ export const listByMovie = query({
   },
 });
 
+export const like = mutation({
+  args: { commentId: v.id("comments") },
+  handler: async (ctx, { commentId }) => {
+    const c = await ctx.db.get(commentId);
+    if (!c) return;
+    await ctx.db.patch(commentId, {
+      like_count: (c.like_count ?? 0) + 1,
+    });
+  },
+});
 
+export const dislike = mutation({
+  args: { commentId: v.id("comments") },
+  handler: async (ctx, { commentId }) => {
+    const c = await ctx.db.get(commentId);
+    if (!c) return;
+    await ctx.db.patch(commentId, {
+      dislike_count: (c.dislike_count ?? 0) + 1,
+    });
+  },
+});
+
+export const reactToComment = mutation({
+  args: {
+    commentId: v.id("comments"),
+    userId: v.id("userProfiles"),
+    reaction: v.union(v.literal("like"), v.literal("dislike")),
+  },
+
+  handler: async (ctx, { commentId, userId, reaction }) => {
+    const existing = await ctx.db
+      .query("commentReactions")
+      .withIndex("by_comment_user", q =>
+        q.eq("comment_id", commentId).eq("user_id", userId)
+      )
+      .unique();
+
+    const now = Date.now();
+
+    if (existing && existing.reaction === reaction) {
+      await ctx.db.delete(existing._id);
+    }
+
+    else if (existing) {
+      await ctx.db.patch(existing._id, {
+        reaction,
+        updated_at: now,
+      });
+    }
+
+    else {
+      await ctx.db.insert("commentReactions", {
+        comment_id: commentId,
+        user_id: userId,
+        reaction,
+        created_at: now,
+        updated_at: now,
+      });
+    }
+
+    const reactions = await ctx.db
+      .query("commentReactions")
+      .withIndex("by_comment", q => q.eq("comment_id", commentId))
+      .collect();
+
+    const likeCount = reactions.filter(r => r.reaction === "like").length;
+    const dislikeCount = reactions.filter(r => r.reaction === "dislike").length;
+
+    await ctx.db.patch(commentId, {
+      like_count: likeCount,
+      dislike_count: dislikeCount,
+    });
+  },
+});
