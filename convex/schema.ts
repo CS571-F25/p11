@@ -34,6 +34,15 @@ export default defineSchema({
     dislike_count: v.optional(v.number()),
   }).index("by_movie", ["movie_id"]).index("by_parent", ["parent_comment_id"]),
 
+  commentReactions: defineTable({
+    comment_id: v.id("comments"),
+    user_id: v.id("userProfiles"),
+    reaction: v.union(v.literal("like"), v.literal("dislike")),
+    created_at: v.number(),
+    updated_at: v.number(),
+  })
+  .index("by_comment", ["comment_id"]).index("by_comment_user", ["comment_id", "user_id"]),
+
   reactions: defineTable({
     user_id: v.id("userProfiles"),
     movie_id: v.id("movies"),

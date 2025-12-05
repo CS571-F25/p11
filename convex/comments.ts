@@ -37,13 +37,39 @@ export const listByMovie = query({
       .withIndex("by_movie", (q) => q.eq("movie_id", args.movie_id))
       .collect();
 
-    // Join with userProfiles to get username
+    // Join with userProfiles to get username and reactions
     return await Promise.all(
       comments.map(async (comment) => {
         const userProfile = await ctx.db.get(comment.user_id);
+        const reactions = await ctx.db
+          .query("commentReactions")
+          .withIndex("by_comment", (q) => q.eq("comment_id", comment._id))
+          .collect();
+        
         return {
           ...comment,
           username: userProfile?.username || "Unknown",
+          reactions: reactions,
+        };
+      })
+    );
+  },
+});
+
+export const listByParent = query({
+  args: { parent_comment_id: v.id("comments") },
+  handler: async (ctx, { parent_comment_id }) => {
+    const comments = await ctx.db
+      .query("comments")
+      .withIndex("by_parent", (q) => q.eq("parent_comment_id", parent_comment_id))
+      .collect();
+
+    return await Promise.all(
+      comments.map(async (comment) => {
+        const user = await ctx.db.get(comment.user_id);
+        return {
+          ...comment,
+          username: user?.username || "Unknown",
         };
       })
     );
@@ -51,3 +77,105 @@ export const listByMovie = query({
 });
 
 
+export const deleteComment = mutation({
+  args: { commentId: v.id("comments") },
+  handler: async (ctx, { commentId }) => {
+    const authUserId = await getAuthUserId(ctx);
+    if (!authUserId) throw new Error("Must be logged in");
+
+    const userProfileId = await getOrCreateUserProfile(ctx, authUserId);
+
+    const comment = await ctx.db.get(commentId);
+    if (!comment) throw new Error("Comment not found");
+
+    if (comment.user_id !== userProfileId) {
+      throw new Error("You can only delete your own comments");
+    }
+
+    await ctx.db.delete(commentId);
+    return { success: true };
+  },
+});
+
+export const like = mutation({
+  args: { commentId: v.id("comments") },
+  handler: async (ctx, { commentId }) => {
+    const c = await ctx.db.get(commentId);
+    if (!c) return;
+    await ctx.db.patch(commentId, {
+      like_count: (c.like_count ?? 0) + 1,
+    });
+  },
+});
+
+export const dislike = mutation({
+  args: { commentId: v.id("comments") },
+  handler: async (ctx, { commentId }) => {
+    const c = await ctx.db.get(commentId);
+    if (!c) return;
+    await ctx.db.patch(commentId, {
+      dislike_count: (c.dislike_count ?? 0) + 1,
+    });
+  },
+});
+
+export const reactToComment = mutation({
+  args: {
+    commentId: v.id("comments"),
+    userId: v.id("userProfiles"),
+    reaction: v.union(v.literal("like"), v.literal("dislike")),
+  },
+
+  handler: async (ctx, { commentId, userId, reaction }) => {
+    const comment = await ctx.db.get(commentId);
+    if (!comment) throw new Error("Comment not found");
+    
+    // Prevent comment owner from reacting to their own comment
+    if (comment.user_id === userId) {
+      throw new Error("You cannot like or dislike your own comment");
+    }
+
+    const existing = await ctx.db
+      .query("commentReactions")
+      .withIndex("by_comment_user", q =>
+        q.eq("comment_id", commentId).eq("user_id", userId)
+      )
+      .unique();
+
+    const now = Date.now();
+
+    if (existing && existing.reaction === reaction) {
+      await ctx.db.delete(existing._id);
+    }
+
+    else if (existing) {
+      await ctx.db.patch(existing._id, {
+        reaction,
+        updated_at: now,
+      });
+    }
+
+    else {
+      await ctx.db.insert("commentReactions", {
+        comment_id: commentId,
+        user_id: userId,
+        reaction,
+        created_at: now,
+        updated_at: now,
+      });
+    }
+
+    const reactions = await ctx.db
+      .query("commentReactions")
+      .withIndex("by_comment", q => q.eq("comment_id", commentId))
+      .collect();
+
+    const likeCount = reactions.filter(r => r.reaction === "like").length;
+    const dislikeCount = reactions.filter(r => r.reaction === "dislike").length;
+
+    await ctx.db.patch(commentId, {
+      like_count: likeCount,
+      dislike_count: dislikeCount,
+    });
+  },
+});

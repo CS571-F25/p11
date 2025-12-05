@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { getTrendingMoviesQueryAdvanced } from "@/lib/external";
 import { MovieCard } from "@/components/MovieCard";
 import { Input } from "@/components/ui/input";
@@ -77,10 +78,14 @@ export default function TrendingPage() {
   const handleNext = () => setPage((p) => p + 1);
 
   return (
-    <div className="min-h-screen">
-      <section className="py-10 md:py-14">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6">Trending</h1>
+    <>
+      <Head>
+        <title>Trending Movies - ReelFindr</title>
+      </Head>
+      <div className="min-h-screen">
+        <section className="py-10 md:py-14">
+          <div className="container mx-auto px-4">
+            <h1 className="text-3xl md:text-4xl font-bold mb-6">Trending</h1>
           <div className="grid grid-cols-12 gap-6">
             {/* Sidebar Filters */}
             <aside className="col-span-12 md:col-span-3">
@@ -148,31 +153,41 @@ export default function TrendingPage() {
                 <div className="space-y-2">
                   <Label>Rating Range</Label>
                   <div className="flex items-center gap-2">
-                    <Input
-                      type="number"
-                      min={0}
-                      max={10}
-                      step={0.5}
-                      value={draftMinRating}
-                      onChange={(e) => setDraftMinRating(() => {
-                        const v = parseFloat(e.target.value);
-                        if (Number.isNaN(v)) return 0;
-                        return Math.max(0, Math.min(10, v));
-                      })}
-                    />
+                    <div className="flex-1">
+                      <Label htmlFor="min-rating" className="sr-only">Minimum Rating</Label>
+                      <Input
+                        id="min-rating"
+                        type="number"
+                        min={0}
+                        max={10}
+                        step={0.5}
+                        value={draftMinRating}
+                        onChange={(e) => setDraftMinRating(() => {
+                          const v = parseFloat(e.target.value);
+                          if (Number.isNaN(v)) return 0;
+                          return Math.max(0, Math.min(10, v));
+                        })}
+                        aria-label="Minimum rating"
+                      />
+                    </div>
                     <span className="text-sm text-muted-foreground">to</span>
-                    <Input
-                      type="number"
-                      min={0}
-                      max={10}
-                      step={0.5}
-                      value={draftMaxRating}
-                      onChange={(e) => setDraftMaxRating(() => {
-                        const v = parseFloat(e.target.value);
-                        if (Number.isNaN(v)) return 10;
-                        return Math.max(0, Math.min(10, v));
-                      })}
-                    />
+                    <div className="flex-1">
+                      <Label htmlFor="max-rating" className="sr-only">Maximum Rating</Label>
+                      <Input
+                        id="max-rating"
+                        type="number"
+                        min={0}
+                        max={10}
+                        step={0.5}
+                        value={draftMaxRating}
+                        onChange={(e) => setDraftMaxRating(() => {
+                          const v = parseFloat(e.target.value);
+                          if (Number.isNaN(v)) return 10;
+                          return Math.max(0, Math.min(10, v));
+                        })}
+                        aria-label="Maximum rating"
+                      />
+                    </div>
                   </div>
                 </div>
 
@@ -231,7 +246,7 @@ export default function TrendingPage() {
             <main className="col-span-12 md:col-span-9">
               {isLoading ? (
                 <div className="py-16 flex flex-col items-center justify-center text-center text-muted-foreground">
-                  <Loader2 className="h-8 w-8 text-primary animate-spin mb-4" />
+                  <Loader2 className="h-8 w-8 text-primary animate-spin mb-4" aria-label="Loading" />
                   <span className="block text-lg">Loading…</span>
                 </div>
               ) : (
@@ -249,9 +264,10 @@ export default function TrendingPage() {
               </div>
             </main>
           </div>
-        </div>
-      </section>
-    </div>
+          </div>
+        </section>
+      </div>
+    </>
   );
 }
 

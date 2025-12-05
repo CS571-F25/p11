@@ -33,9 +33,10 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
                         ) : (
                             <Image
                                 src={getImageUrl(movie.poster_path ?? movie.backdrop_path)}
-                                alt={movie.title}
+                                alt=""
                                 fill
                                 className="object-cover group-hover:scale-105 transition-transform duration-300"
+                                aria-hidden="true"
                             />
                         )}
                         {/* Top overlay with gradient and overview text */}
@@ -49,9 +50,9 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
                         </div>
                     </div>
                     <div className="p-4 rounded-lg bg-card text-card-foreground shadow-md hover:shadow-lg transition-shadow duration-300">
-                        <h4 className="font-semibold text-lg text-balance line-clamp-1">
+                        <div className="font-semibold text-lg text-balance line-clamp-1">
                             {movie.title}
-                        </h4>
+                        </div>
 
                         {(() => {
                             const genreNames = (movie.genre_ids || [])
@@ -79,14 +80,14 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
                             </span>
 
                             <div className="flex items-center gap-1.5 text-primary">
-                                <Star className="h-4 w-4 fill-primary text-primary" />
+                                <Star className="h-4 w-4 fill-primary text-primary" aria-label="Rating" aria-hidden="true" />
                                 <span className="font-medium">
                                     {movie.vote_average?.toFixed?.(1) ?? "-"}
                                 </span>
                             </div>
                         </div>
                         {/* Action Buttons */}
-                        <div className="flex gap-2 mt-3">
+                        <div className="flex flex-wrap gap-2 mt-3">
                             {/* Add to Watched Button */}
                             <button
                                 onClick={(e) => {
@@ -101,7 +102,7 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
                                 }`}
                                 title={watched ? 'Already watched' : 'Mark as watched'}
                             >
-                                {watched ? <Check size={14} /> : <Eye size={14} />}
+                                {watched ? <Check size={14} aria-label="Watched" /> : <Eye size={14} aria-label="Mark as watched" />}
                                 <span>{watched ? 'Watched' : 'Watch'}</span>
                             </button>
 
@@ -120,7 +121,7 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
                                     }`}
                                     title={inQueue ? 'Already in queue' : 'Add to queue'}
                                 >
-                                    {inQueue ? <Check size={14} /> : <Plus size={14} />}
+                                    {inQueue ? <Check size={14} aria-label="In queue" /> : <Plus size={14} aria-label="Add to queue" />}
                                     <span>{inQueue ? 'Queued' : 'Queue'}</span>
                                 </button>
                             )}

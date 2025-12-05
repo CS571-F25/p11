@@ -1,4 +1,5 @@
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { Menubar } from "@/components/ui/menubar"
 import { MenubarMenu, MenubarTrigger } from "@radix-ui/react-menubar";
 import { motion } from 'framer-motion';
@@ -17,7 +18,11 @@ export default function WatchQueue(){
     console.log(handleMarkAsWatched);
 
     return(
-        <div className="flex flex-col items-center min-h-screen p-6">
+        <>
+            <Head>
+                <title>Movie Queue - ReelFindr</title>
+            </Head>
+            <div className="flex flex-col items-center min-h-screen p-6">
             {/* Navigation Bar */}
             <Menubar className="mx-auto flex gap-4 mb-8">
                 <MenubarMenu>
@@ -71,9 +76,10 @@ export default function WatchQueue(){
                                     {movie.poster_path ? (
                                         <Image
                                             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                                            alt={movie.title}
+                                            alt=""
                                             fill
                                             className="object-cover"
+                                            aria-hidden="true"
                                         />
                                     ) : (
                                         <div className="w-full h-full bg-gray-800 flex items-center justify-center">
@@ -88,20 +94,20 @@ export default function WatchQueue(){
                                             className="bg-green-600 hover:bg-green-700 text-white p-3 rounded-full transition-colors"
                                             aria-label="Mark as watched"
                                         >
-                                            <Check size={20} />
+                                            <Check size={20} aria-label="Mark as watched" />
                                         </button>
                                         <button
                                             onClick={() => removeFromQueue(movie.id)}
                                             className="bg-red-600 hover:bg-red-700 text-white p-3 rounded-full transition-colors"
                                             aria-label="Remove from queue"
                                         >
-                                            <Trash2 size={20} />
+                                            <Trash2 size={20} aria-label="Remove from queue" />
                                         </button>
                                     </div>
                                 </div>
                                 
                                 <div className="mt-2">
-                                    <h3 className="font-semibold text-sm line-clamp-2">{movie.title}</h3>
+                                    <h2 className="font-semibold text-sm line-clamp-2">{movie.title}</h2>
                                     <p className="text-xs text-gray-500 mt-1">
                                         {movie.release_date ? new Date(movie.release_date).getFullYear() : 'N/A'}
                                     </p>
@@ -112,5 +118,6 @@ export default function WatchQueue(){
                 )}
             </motion.div>
         </div>
+        </>
     )
 }

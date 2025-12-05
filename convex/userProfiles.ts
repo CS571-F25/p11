@@ -66,6 +66,15 @@ export async function getOrCreateUserProfile(ctx: MutationCtx, authUserId: Id<"u
   });
 }
 
+export const getOrCreateCurrentUser = mutation({
+  handler: async (ctx) => {
+    const authUserId = await getAuthUserId(ctx);
+    if (!authUserId) return null;
+
+    return await getOrCreateUserProfile(ctx, authUserId);
+  },
+});
+
 export const createOnSignUp = mutation({
   args: {
     username: v.string(),
@@ -104,6 +113,18 @@ export const createOnSignUp = mutation({
     });
   },
 });
+
+export const getUserById = query({
+  args: {
+    userId: v.id("users"),
+  },
+  handler: async (ctx, args) => {
+    return await ctx.db
+      .query("userProfiles")
+      .withIndex("by_user_id", (q) => q.eq("userId", args.userId))
+      .unique();
+  }
+})
 
 export const upsert = mutation({
   args: {

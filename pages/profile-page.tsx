@@ -1,5 +1,6 @@
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
+import Head from "next/head";
 import { useQuery, useMutation } from "convex/react";
 import { api } from "@/convex/_generated/api"; 
 import { useConvexAuth } from "convex/react";
@@ -55,7 +56,7 @@ export default function ProfilePage(){
     if (isLoading || queryLoading){
         return (
             <div className="min-h-screen flex items-center justify-center">
-                <Loader2 className="h-8 w-8 animate-spin text-primary"/>
+                <Loader2 className="h-8 w-8 animate-spin text-primary" aria-label="Loading" />
             </div>
         );
     }
@@ -144,7 +145,11 @@ export default function ProfilePage(){
     }
 
     return(
-        <div className="flex flex-col">
+        <>
+            <Head>
+                <title>Profile - ReelFindr</title>
+            </Head>
+            <div className="flex flex-col">
         {/* Include Profile Navigation Bar */}
             <Menubar className="mx-auto flex gap-4 mb-8">
                 <MenubarMenu>
@@ -216,13 +221,15 @@ export default function ProfilePage(){
                                         className="h-8 w-8 p-0"
                                         onClick={() => setIsEditingUsername(true)}
                                     >
-                                        <Edit2 className="h-4 w-4" />
+                                        <Edit2 className="h-4 w-4" aria-label="Edit username" />
                                     </Button>
                                 )}
                             </div>
                             {isEditingUsername ? (
                                 <div className="flex items-center gap-2">
+                                    <Label htmlFor="username-input" className="sr-only">Username</Label>
                                     <Input
+                                        id="username-input"
                                         value={usernameValue}
                                         onChange={(e) => setUsernameValue(e.target.value)}
                                         onKeyDown={(e) => {
@@ -251,9 +258,9 @@ export default function ProfilePage(){
                                         }}
                                     >
                                         {isUpdating ? (
-                                            <Loader2 className="h-4 w-4 text-green-600 animate-spin" />
+                                            <Loader2 className="h-4 w-4 text-green-600 animate-spin" aria-label="Updating" />
                                         ) : (
-                                            <Check className="h-4 w-4 text-green-600" />
+                                            <Check className="h-4 w-4 text-green-600" aria-label="Save" />
                                         )}
                                     </Button>
                                     <Button
@@ -266,7 +273,7 @@ export default function ProfilePage(){
                                             handleCancelEdit();
                                         }}
                                     >
-                                        <X className="h-4 w-4 text-red-600" />
+                                        <X className="h-4 w-4 text-red-600" aria-label="Cancel" />
                                     </Button>
                                 </div>
                             ) : (
@@ -298,6 +305,7 @@ export default function ProfilePage(){
             </div>
         </div>
     </div>
+    </>
 
     )
 

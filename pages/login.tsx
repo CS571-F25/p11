@@ -1,6 +1,7 @@
 import { useAuthActions } from "@convex-dev/auth/react";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -16,8 +17,12 @@ function SignInForm() {
   const router = useRouter();
 
   return (
-    <div>
-      <Card className="flex !w-1/2 mx-auto mt-10 p-10 gap-10">
+    <>
+      <Head>
+        <title>Login - ReelFindr</title>
+      </Head>
+      <div>
+        <Card className="flex !w-1/2 mx-auto mt-10 p-10 gap-10">
         <CardHeader>
           <CardTitle>{flow === "signIn" ? "Login to your account" : "Create an account"}</CardTitle>
           <CardDescription>
@@ -67,7 +72,7 @@ function SignInForm() {
                     <TooltipProvider>
                       <Tooltip>
                         <TooltipTrigger>
-                          <Info className="h-4 w-4 text-muted-foreground ml-2" />
+                          <Info className="h-4 w-4 text-muted-foreground ml-2" aria-label="Password requirements" />
                         </TooltipTrigger>
                         <TooltipContent>
                           <p>Must be at least 8 characters</p>
@@ -103,7 +108,8 @@ function SignInForm() {
           </form>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </>
   );
 }
 

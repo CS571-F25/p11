@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
+import Head from "next/head";
 import {Searchbar} from "@/components/Searchbar"
 import {FeaturedMovies} from "@/components/FeaturedMovies"
 import { Button } from "@/components/ui/button"
@@ -20,7 +21,11 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen">
+    <>
+      <Head>
+        <title>ReelFindr - Discover Your Next Favorite Movie</title>
+      </Head>
+      <div className="min-h-screen">
      <section className="relative py-20 md:py-32 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/20 via-background to-background" />
         <div className="container mx-auto px-4 relative z-10">
@@ -49,12 +54,13 @@ export default function Home() {
             <Link href="/trending">
               <Button size="lg" className="gap-2">
                 View All Trending Movies
-                <ArrowRight className="h-4 w-4" />
+                <ArrowRight className="h-4 w-4" aria-label="View all trending movies" aria-hidden="true" />
               </Button>
             </Link>
           </div>
         </div>
       </section>
     </div>
+    </>
   );
 }

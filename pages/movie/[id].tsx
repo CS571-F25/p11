@@ -1,5 +1,6 @@
 import { JSXElementConstructor, Key, ReactElement, ReactNode, ReactPortal, useEffect, useState } from "react"
 import { useRouter } from "next/router"
+import Head from "next/head"
 import { getMovieDetailsQuery, getMovieWatchProvidersQuery, getMovieRecommendationsQuery } from "@/lib/external"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -41,7 +42,7 @@ export default function MovieDetailsPage() {
   if (isLoading || !movie) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <Loader2 className="h-8 w-8 text-primary animate-spin" />
+        <Loader2 className="h-8 w-8 text-primary animate-spin" aria-label="Loading" />
       </div>
     )
   }
@@ -53,10 +54,14 @@ export default function MovieDetailsPage() {
   const releaseYear = movie.release_date ? new Date(movie.release_date).getFullYear() : null
 
   return (
-    <div className="container mx-auto">
+    <>
+      <Head>
+        <title>{movie.title} - ReelFindr</title>
+      </Head>
+      <div className="container mx-auto">
       {/* Back Button */}
       <Button variant="outline" className="mb-8 gap-2 bg-transparent" onClick={() => router.back()}>
-        <ArrowLeft className="h-4 w-4" />
+        <ArrowLeft className="h-4 w-4" aria-label="Back" aria-hidden="true" />
         Back
       </Button>
 
@@ -67,8 +72,9 @@ export default function MovieDetailsPage() {
           {movie.poster_path ? (
             <img
               src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
-              alt={movie.title}
+              alt=""
               className="w-full rounded-lg shadow-lg"
+              aria-hidden="true"
             />
           ) : (
             <div className="w-full aspect-[2/3] bg-muted rounded-lg flex items-center justify-center">
@@ -80,7 +86,7 @@ export default function MovieDetailsPage() {
           <Card className="mt-6 p-4 space-y-4">
             <div>
               <div className="flex items-center gap-2 mb-1">
-                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
+                <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" aria-label="Rating" aria-hidden="true" />
                 <span className="font-semibold">{movie.vote_average ? movie.vote_average.toFixed(1) : '0.0'}</span>
               </div>
               <span className="text-xs text-muted-foreground">
@@ -90,22 +96,22 @@ export default function MovieDetailsPage() {
 
             {releaseYear && (
               <div className="flex items-center gap-2">
-                <Calendar className="h-4 w-4 text-muted-foreground" />
+                <Calendar className="h-4 w-4 text-muted-foreground" aria-label="Release year" aria-hidden="true" />
                 <span className="text-sm">{releaseYear}</span>
               </div>
             )}
 
             {movie.runtime && (
               <div className="flex items-center gap-2">
-                <Users className="h-4 w-4 text-muted-foreground" />
+                <Users className="h-4 w-4 text-muted-foreground" aria-label="Runtime" aria-hidden="true" />
                 <span className="text-sm">{movie.runtime} minutes</span>
               </div>
             )}
 
             {/* Genres */}
             {movie.genres && movie.genres.length > 0 && (
-              <div className="space-y-2">
-                <div className="text-sm font-semibold text-muted-foreground">Genres</div>
+              <div>
+                <div className="text-sm font-semibold text-muted-foreground mb-2">Genres</div>
                 <div className="flex flex-wrap gap-2">
                   {movie.genres.map((genre: { id: number; name: string }) => (
                     <Badge key={genre.id} variant="outline" className="bg-transparent text-white border-primary">
@@ -173,14 +179,14 @@ export default function MovieDetailsPage() {
                     {/* Streaming (Subscription) */}
                     {uniqueFlatrate.length > 0 && (
                       <Card className="p-4">
-                        <div className="text-base font-semibold text-foreground">Where to Stream?</div>
+                        <div className="text-base font-semibold text-foreground mb-2">Where to Stream?</div>
                         <div className="flex flex-wrap gap-2">
                           {uniqueFlatrate.map((provider) => (
                             <div key={provider.provider_id} className="flex items-center">
                               {provider.logo_path ? (
                                 <img
                                   src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`}
-                                  alt={provider.provider_name}
+                                  alt={`${provider.provider_name} logo`}
                                   className="h-10 w-auto object-contain"
                                 />
                               ) : (
@@ -195,14 +201,14 @@ export default function MovieDetailsPage() {
                     {/* Rent */}
                     {uniqueRent.length > 0 && (
                       <Card className="p-4">
-                        <div className="text-base font-semibold text-foreground">Where to Rent?</div>
+                        <div className="text-base font-semibold text-foreground mb-2">Where to Rent?</div>
                         <div className="flex flex-wrap gap-2">
                           {uniqueRent.map((provider) => (
                             <div key={provider.provider_id} className="flex items-center">
                               {provider.logo_path ? (
                                 <img
                                   src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`}
-                                  alt={provider.provider_name}
+                                  alt={`${provider.provider_name} logo`}
                                   className="h-10 w-auto object-contain"
                                 />
                               ) : (
@@ -217,14 +223,14 @@ export default function MovieDetailsPage() {
                     {/* Buy */}
                     {uniqueBuy.length > 0 && (
                       <Card className="p-4">
-                        <div className="text-base font-semibold text-foreground">Where to Buy?</div>
+                        <div className="text-base font-semibold text-foreground mb-2">Where to Buy?</div>
                         <div className="flex flex-wrap gap-2">
                           {uniqueBuy.map((provider) => (
                             <div key={provider.provider_id} className="flex items-center">
                               {provider.logo_path ? (
                                 <img
                                   src={`https://image.tmdb.org/t/p/w45${provider.logo_path}`}
-                                  alt={provider.provider_name}
+                                  alt={`${provider.provider_name} logo`}
                                   className="h-10 w-auto object-contain"
                                 />
                               ) : (
@@ -311,7 +317,7 @@ export default function MovieDetailsPage() {
             {/* Production Companies */}
             {movie.production_companies && movie.production_companies.length > 0 && (
               <Card className="p-4">
-                <div className="text-base font-semibold text-foreground">Production Companies</div>
+                <div className="text-base font-semibold text-foreground mb-2">Production Companies</div>
                 <div className="flex flex-wrap gap-2">
                   {movie.production_companies.map((company: { id: Key | null | undefined; name: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | null | undefined }) => (
                     <Badge key={company.id} variant="outline" className="bg-transparent text-white border-primary">
@@ -339,6 +345,8 @@ export default function MovieDetailsPage() {
                     >
                       <ArrowRight
                         className={`transition-transform duration-200 mr-1 ${showRecommendedMovies ? "rotate-90" : "rotate-0"}`}
+                        aria-label={showRecommendedMovies ? "Hide recommended movies" : "Show recommended movies"}
+                        aria-hidden="true"
                       />
                       <span>Show recommended movies</span>
                     </button>
@@ -359,5 +367,6 @@ export default function MovieDetailsPage() {
         </main>
       </div>
     </div>
+    </>
   );
 }
