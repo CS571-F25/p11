@@ -266,7 +266,7 @@ export default function MovieDetailsPage() {
           {/* Title and Tagline */}
           <div>
             <h1 className="text-4xl md:text-5xl font-bold mb-2">{movie.title}</h1>
-            {movie.tagline && <p className="text-lg text-muted-foreground italic">{movie.tagline}</p>}
+            {movie.tagline && <h2 className="text-lg text-muted-foreground italic">{movie.tagline}</h2>}
           </div>
 
           {/* Overview */}
