@@ -72,7 +72,7 @@ export default function MovieDetailsPage() {
           {movie.poster_path ? (
             <img
               src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
-              alt=""
+              alt={movie.title + " poster"}
               className="w-full rounded-lg shadow-lg"
               aria-hidden="true"
             />
