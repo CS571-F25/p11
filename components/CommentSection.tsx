@@ -71,7 +71,7 @@ export function CommentSection({ movieId }: CommentsSectionProps) {
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-4">
-        <h2 className="text-xl font-semibold">Comments</h2>
+        <h1 className="text-xl font-semibold">Comments</h1>
         <div className="w-52">
           <Label htmlFor="sort-comments" className="sr-only">Sort comments</Label>
           <Select value={sortBy} onValueChange={(v) => setSortBy(v as SortOption)}>

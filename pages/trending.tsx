@@ -91,9 +91,9 @@ export default function TrendingPage() {
             <aside className="col-span-12 md:col-span-3">
               <div className="rounded-lg border border-border/50 p-4 space-y-6 bg-card">
                 <div className="space-y-2">
-                  <Label>Time Window</Label>
+                  <span id="timeWindow-label">Time Window</span>
                   <Select value={draftTimeWindow} onValueChange={(v) => setDraftTimeWindow(v as 'day' | 'week')}>
-                    <SelectTrigger className="w-full">
+                    <SelectTrigger aria-labelledby="timeWindow-label" id="timeWindow" className="w-full">
                       <SelectValue placeholder="Window" />
                     </SelectTrigger>
                     <SelectContent>
@@ -104,10 +104,10 @@ export default function TrendingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Genres</Label>
+                  <span id="genres-label">Genres</span>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="outline" className="w-full justify-between">
+                      <Button aria-labelledby="genres-label" variant="outline" className="w-full justify-between">
                         {draftGenreIds.length === 0
                           ? "All genres"
                           : (() => {
@@ -151,7 +151,7 @@ export default function TrendingPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Rating Range</Label>
+                  <span>Rating Range</span>
                   <div className="flex items-center gap-2">
                     <div className="flex-1">
                       <Label htmlFor="min-rating" className="sr-only">Minimum Rating</Label>

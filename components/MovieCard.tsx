@@ -33,7 +33,7 @@ export const MovieCard = ({ movie }: { movie: MovieOverview }) => {
                         ) : (
                             <Image
                                 src={getImageUrl(movie.poster_path ?? movie.backdrop_path)}
-                                alt=""
+                                alt={movie.title + " poster"}
                                 fill
                                 className="object-cover group-hover:scale-105 transition-transform duration-300"
                                 aria-hidden="true"

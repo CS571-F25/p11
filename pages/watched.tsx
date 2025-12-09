@@ -70,7 +70,7 @@ export default function WatchedMovies(){
                                     {movie.poster_path ? (
                                         <Image
                                             src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
-                                            alt=""
+                                            alt={movie.title + " poster"}
                                             fill
                                             className="object-cover"
                                             aria-hidden="true"

@@ -72,7 +72,7 @@ export default function MovieDetailsPage() {
           {movie.poster_path ? (
             <img
               src={`https://image.tmdb.org/t/p/w342${movie.poster_path}`}
-              alt=""
+              alt={movie.title + " poster"}
               className="w-full rounded-lg shadow-lg"
               aria-hidden="true"
             />
@@ -266,7 +266,7 @@ export default function MovieDetailsPage() {
           {/* Title and Tagline */}
           <div>
             <h1 className="text-4xl md:text-5xl font-bold mb-2">{movie.title}</h1>
-            {movie.tagline && <p className="text-lg text-muted-foreground italic">{movie.tagline}</p>}
+            {movie.tagline && <h2 className="text-lg text-muted-foreground italic">{movie.tagline}</h2>}
           </div>
 
           {/* Overview */}
